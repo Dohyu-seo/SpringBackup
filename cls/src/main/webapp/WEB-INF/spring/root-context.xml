@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+						https://www.springframework.org/schema/beans/spring-beans.xsd
+						http://www.springframework.org/schema/context
+						http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+	
+	
+	
+	<!-- Root Context: defines shared resources visible to all other web components -->
+	<!-- 
+		annotation-config 태그는 기본 xml에서는 제공하지 않는 태그
+		이 태그를 사용하도록 하기 위해서는 context라는 스키마를 사용하겠다고 선언해 줘야한다.
+					xmlns:context="http://www.springframework.org/schema/context" 
+								스키마 : 데이터베이스에서 자료의 구조, 자료의 표현 방법, 자료 간의 관계를 형식 언어로 정의한 구조이다
+								
+								ns : 네임스페이스이다.
+								xsi는 스키마 인터페이스의 별칭이다.
+								context: 스프링 프레임워크 context의 별칭이다.
+		 1. 스키마 사용 선언을 해준다.
+		 2. 해당 스키마를 파싱(번역)할 수 있는 도구를 지정해야 한다.
+	 -->
+ 	<context:annotation-config />
+ 	
+ 	<!-- 
+ 			bean 처리를 하기 위한 태그
+ 			
+ 			bean 등록하는 방법
+ 				xml파일 안에서 하기 때문에 태그로 이루어져 있다.
+ 				<bean id="구분값" class="실제클래스의 패키지 경로와 클래스 이름" />
+ 				
+ 			예시 ]
+ 			
+ 				<bean id="boardDAO" class="com.increpas.cls.dao.BoardDAO" />
+ 	 -->
+ 	 
+ 	 <!-- 
+ 	 	DB설정 :
+ 	 		myBatis 설정
+ 	 		
+ 	 			주의 ]
+ 	 					xml파일은 java파일이 아니다.
+ 	 					따라서 자바의 패키지 경로로 사용하는 것이 아니고
+ 	 					일반 파일의 폴더 경로로 처리해야 한다.
+ 	 					
+ 	 					따라서 경로를 구분할 때 구분자로 . 을 사용하지 않고
+ 	 														/를 사용해서 처리한다.
+ 	 		myBatis를 이용해서 데이터베이스를 처리하기 위해서는 커넥션이 반드시 필요하다.
+ 	 		
+ 	 		그런데 jsp에서 커넥션 이라고 부르는 것은
+ 	 		Oracle에서 Session이라고 부르고
+ 	 		myBatis역시 Session이라고 부른다.
+ 	 		
+ 	 		이 Session이 DAO클래스에서 사용되어야 할 것이기 때문에
+ 	 		
+ 	 		이것도 bean처리가 되어야 한다.
+ 	  -->
+	 	  
+	 	  <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+	 	  		<property name="driverClassName" value="oracle.jdbc.driver.OracleDriver" />
+	 	  		<property name="url" value="jdbc:oracle:thin:@localhost:1521:orcl"/>
+	 	  		<property name="username" value="hello"/>
+	 	  		<property name="password" value="hello"/>
+	 	  		<property name="maxActive" value="8"/>
+	 	  </bean>
+	 	
+	 	<!-- myBatis 환경 설정 -->
+	 	 <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+	 	 	<property name="dataSource" ref="dataSource"/>
+	 	 	<property name="configLocation" value="classpath:/resources/mybatis-config.xml" />
+	 	 </bean>
+	 	 
+	 	 <bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+	 	 	<constructor-arg index="0" ref="sqlSessionFactory" />
+	 	 </bean>
+	 	 
+</beans>
